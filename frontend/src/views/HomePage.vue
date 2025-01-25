@@ -1,23 +1,22 @@
 <template>
     <div class="home">
-      <h1>{{ message }}</h1> <!-- Afișează mesajul din Vuex -->
+        <h1>Useri</h1>
+        <ul>
+            <li v-for="user in users" :key="user.id">{{ user.name }}</li> <!-- Test afișare utilizatori din Firestore -->
+        </ul>
     </div>
-  </template>
-  
-  <script>
-  import { computed } from 'vue';
-  import { useStore } from 'vuex';
-  
-  export default {
+</template>
+
+<script>
+import { mapState } from 'vuex';
+
+export default {
     name: 'HomePage',
-    setup() {
-      const store = useStore(); // Crearea instanței store-ului 
-  
-      // Crearea unei variabile computed care obține mesajul de test din state-ul Vuex
-      const message = computed(() => store.state.message);
-  
-      return { message }; // Returnarea variabilei pentru a fi utilizată în template
+    computed: {
+        ...mapState(['users']), // Obține users din Vuex state
     },
-  };
-  </script>
-  
+    created() {
+        this.$store.dispatch('fetchUsers'); // Fetch utilizatori din Firestore prin Vuex
+    },
+};
+</script>
