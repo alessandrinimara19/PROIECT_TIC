@@ -1,8 +1,11 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors'
+
 import logger from "./middleware/logger.js" //custom logger 
-import { router } from './routes/index.js'
+
+import { articleRouter } from './routes/articleRoutes.js'
+import { profileRouter } from './routes/profileRoutes.js'
 
 // incarcare variabile de mediu din fisierul env
 dotenv.config({ path: './env' })
@@ -17,15 +20,25 @@ app.use(logger)
 app.use(express.json())
 
 //setup cors middleware
+// app.use(
+//     cors({
+//         origin: [process.env.FRONTEND_ROUTE],
+//         credentials: true,
+//         "Access-Control-Allow-Origin": "*"
+//     })
+// )
 app.use(
     cors({
-        origin: [process.env.FRONTEND_ROUTE],
-        credentials: true,
+        origin: "*", // Allow all origins
+        methods: ["GET", "POST", "PATCH", "DELETE"], // Allow specific HTTP methods
+        allowedHeaders: ["Content-Type", "Authorization"], // Allow specific headers
     })
-)
+);
 
-// prima ruta de test
-app.use('/api', router)
+// Rute
+app.use("/api/articles", articleRouter);
+app.use("/api/profile", profileRouter);
+// app.use("/api/auth", authRouter);
 
 app.use((req, res, next) => {
     res.status(404).json({ message: 'Ruta nu a fost gasita' })

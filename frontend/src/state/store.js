@@ -1,8 +1,8 @@
 import { createStore } from 'vuex';
-import { collection, getDocs } from 'firebase/firestore'; // Firebase Firestore
+import { collection, getDocs, doc } from 'firebase/firestore'; // Firebase Firestore
 import { db } from '../firebaseConfig'; // Config Firebase
 
-const store = createStore({
+export const store = createStore({
   state() {
     return {
       users: [], // Lista de utilizatori
@@ -27,7 +27,7 @@ const store = createStore({
         console.error('Eroare la fetch-ul utilizatorilor:', error);
       }
     },
-  },
+  }
 });
 
 export default store;

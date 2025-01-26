@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
-import HomePage from "../views/HomePage.Vue";
+import DiscoverPage from "../views/DiscoverPage.vue";
+import BlogItPage from "../views/BlogItPage.vue";
+import ArticlePage from "../views/ArticlePage.vue";
 
 
 const router = createRouter({
@@ -7,10 +9,22 @@ const router = createRouter({
     routes: [
         {
             path: "/",
-            name: "homepage",
-            component: HomePage,
+            name: "discover",
+            component: DiscoverPage,
+        },
+        {
+            path: "/blogit",
+            name: "blogit",
+            component: BlogItPage, // Adaugă ruta pentru BlogItPage
+        },
+        {
+            path: '/article/:id',
+            name: 'ArticlePage',
+            component: ArticlePage,
+            props: true, // permite pasarea de params in componenta
         }
     ],
 });
 
 export default router;
+
