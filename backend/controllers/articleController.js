@@ -1,5 +1,5 @@
 import db from "../database/firestore.js";
-import AppError from "../utils/appError.js";
+import AppError from "../utils/AppError.js";
 
 // Obține toate articolele
 const getAllArticles = async (req, res, next) => {

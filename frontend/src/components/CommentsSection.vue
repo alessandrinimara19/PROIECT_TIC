@@ -6,13 +6,9 @@
       <button type="submit" class="comment-button">Trimite</button>
     </form>
     <ul class="comments-list">
-      <!-- <li v-for="comment in comments" :key="comment.id" class="comment-item">
-        <strong class="comment-author">{{ comment.author }}</strong>: 
-        <span class="comment-text">{{ comment.text }}</span>
-      </li> -->
-      <li class="comment-item">
-        <strong class="comment-author">Test autor</strong>
-        <span class="comment-text">Test comentariu</span>
+      <li v-for="comment in comments" :key="comment.commentId" class="comment-item">
+        <strong class="comment-author">{{ comment.authorName }}</strong>
+        <span class="comment-content">{{ comment.content }}</span>
       </li>
     </ul>
   </div>
@@ -76,7 +72,7 @@ h3 {
   margin-bottom: 5px;
 }
 
-.comment-text {
+.comment-content {
   font-size: 1rem;
   color: #555;
 }

@@ -2,7 +2,7 @@
 import { ref, onMounted } from "vue";
 import ArticleCard from "../components/ArticleCard.vue";
 import TopNav from "../components/TopNav.vue";
-import convertTimestamp from "../../utils/formatters";
+import { convertTimestamp } from "../../utils/formatters.js";
 
 // API_URL din .env
 const API_URL = import.meta.env.VITE_API_URL;
@@ -11,8 +11,35 @@ const API_URL = import.meta.env.VITE_API_URL;
 const articles = ref([]);
 const loading = ref(true);
 const error = ref(null);
+const usersMap = ref({}); // Map pentru regasirea rapida a userilor
 
-// Fetch articole din backend
+// Fetch users si construirea map-ului
+const fetchUsers = async () => {
+    try {
+        const response = await fetch(`${API_URL}/users`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch users");
+        }
+
+        const data = await response.json();
+
+        // Map cu userId ca si cheie
+        usersMap.value = data.users.reduce((map, user) => {
+            map[user.id] = `${user.name} ${user.surname}`;
+            return map;
+        }, {});
+    } catch (err) {
+        error.value = err.message;
+    }
+};
+
+// Fetch articole si adaugare nume prenume autor in "author" (bazat pe map)
 const fetchArticles = async () => {
     try {
         const response = await fetch(`${API_URL}/articles`, {
@@ -27,15 +54,14 @@ const fetchArticles = async () => {
         }
 
         const data = await response.json();
-        console.log(data)
 
-        // Procesare articolele pentru a adăuga id-ul și a formata data
+        // Adaugare nume prenume autor fiecarui articol
         articles.value = data.articles.map((article) => {
+            const author = usersMap.value[article.authorId] || "Autor necunoscut";
             return {
                 ...article,
-                createdAt: article.createdAt ?
-                    convertTimestamp(article.createdAt)
-                    : "Data indisponibilă", // Dacă createdAt nu există, afișez un mesaj fallback
+                author,
+                createdAt: convertTimestamp(article.createdAt)
             };
         });
 
@@ -46,7 +72,21 @@ const fetchArticles = async () => {
     }
 };
 
-onMounted(fetchArticles);
+// Fetch useri si articole
+const fetchData = async () => {
+    loading.value = true;
+    try {
+        await fetchUsers(); // Fetch useri
+        await fetchArticles(); // Fetch articole
+    } catch (err) {
+        error.value = err.message;
+    } finally {
+        loading.value = false;
+    }
+};
+
+onMounted(fetchData);
+
 </script>
 
 <template>

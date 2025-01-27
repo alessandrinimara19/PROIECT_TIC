@@ -5,7 +5,8 @@ import cors from 'cors'
 import logger from "./middleware/logger.js" //custom logger 
 
 import { articleRouter } from './routes/articleRoutes.js'
-import { profileRouter } from './routes/profileRoutes.js'
+import { userRouter } from './routes/userRoutes.js'
+import { fakerRouter } from './routes/fakerRoutes.js'
 
 // incarcare variabile de mediu din fisierul env
 dotenv.config({ path: './env' })
@@ -37,8 +38,9 @@ app.use(
 
 // Rute
 app.use("/api/articles", articleRouter);
-app.use("/api/profile", profileRouter);
+app.use("/api/users", userRouter);
 // app.use("/api/auth", authRouter);
+app.use("/api/faker", fakerRouter);
 
 app.use((req, res, next) => {
     res.status(404).json({ message: 'Ruta nu a fost gasita' })
