@@ -3,7 +3,6 @@ import DiscoverPage from "../views/DiscoverPage.vue";
 import BlogItPage from "../views/BlogItPage.vue";
 import ArticlePage from "../views/ArticlePage.vue";
 
-
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
@@ -19,7 +18,7 @@ const router = createRouter({
         },
         {
             path: '/article/:id',
-            name: 'ArticlePage',
+            name: 'article',
             component: ArticlePage,
             props: true, // permite pasarea de params in componenta
         }

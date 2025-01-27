@@ -36,12 +36,13 @@ const navigateToArticle = () => {
         <!-- Iconițe Edit și Delete, afisate doar dacă canEditDelete este true -->
         <div v-if="canEditDelete" class="actions">
             <button class="edit-button">
-                <span class="icon">✏️</span> Edit
+                <i class="mdi mdi-pencil icon"></i> Edit
             </button>
             <button class="delete-button">
-                <span class="icon">🗑️</span> Delete
+                <i class="mdi mdi-trash-can icon"></i> Delete
             </button>
         </div>
+
     </div>
 </template>
 
@@ -57,7 +58,6 @@ const navigateToArticle = () => {
     background-color: #fff;
     width: 300px;
     height: 200px;
-    /* Dimensiuni consistente */
     overflow: hidden;
 }
 

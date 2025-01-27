@@ -32,13 +32,14 @@ const addComment = () => {
 <style scoped>
 .comments-section {
   padding: 20px;
-  background-color: #f9f9f9;
   border: 1px solid #ddd;
-  border-radius: 10px;
   max-width: 100%;
   margin: 20px auto;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
 }
 
 h3 {

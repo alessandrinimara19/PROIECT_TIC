@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { convertTimestamp } from '../../utils/formatters.js';
 import CommentsSection from '../components/CommentsSection.vue';
+import LikesSection from '../components/LikesSection.vue';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const route = useRoute();
@@ -29,7 +30,6 @@ const fetchArticle = async () => {
 
         const data = await response.json();
         article.value = data.article;
-        console.log(article.value)
 
         // Fetch useri si populare usersMap
         await fetchAllUsers();
@@ -84,51 +84,135 @@ onMounted(fetchArticle);
 
 <template>
     <div class="article-page">
-        <div v-if="loading">Loading...</div>
-        <div v-if="error">{{ error }}</div>
+        <div v-if="loading" class="loading">Loading...</div>
+        <div v-if="error" class="error">{{ error }}</div>
 
-        <div v-if="!loading && !error">
-            <h1>{{ article.title }}</h1>
-            <p class="author">Scris de {{ article.author }} | {{ convertTimestamp(article.createdAt) }}</p>
-            <div class="content">
-                <p>{{ article.content }}</p>
+        <div v-if="!loading && !error" class="content-container">
+            <!-- Continut/text articol-->
+            <div class="article-card">
+                <h1 class="article-title">{{ article.title }}</h1>
+                <p class="author">{{ article.author }} | {{ convertTimestamp(article.createdAt) }}</p>
+                <div class="content">
+                    <p>{{ article.content }}</p>
+                </div>
             </div>
-            <!-- Pasare comentarii si numele autorilor catre componenta CommentsSection -->
-            <CommentsSection :comments="article.comments" />
+
+            <!-- Sectiune like-uri -->
+            <LikesSection :likes="article.likes.length" />
+
+            <!-- Sectiune comentarii -->
+            <div class="right-column">
+                <CommentsSection :comments="article.comments" />
+            </div>
         </div>
     </div>
 </template>
 
-
-
 <style scoped>
 .article-page {
     padding: 20px;
+    max-width: 100%;
+    margin: 0 auto;
 }
 
-h1 {
-    font-size: 2rem;
-    font-weight: bold;
+.loading {
+    font-size: 1.2rem;
+    color: black;
+}
+
+.error {
+    color: red;
+    font-size: 1rem;
+}
+
+.content-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.article-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.article-title {
+    font-size: 2.5rem;
+    font-weight: 600;
     margin-bottom: 10px;
 }
 
 .author {
     font-size: 1rem;
-    color: #888;
-    margin-bottom: 20px;
+    color: #555;
 }
 
 .content {
     font-size: 1.125rem;
     line-height: 1.6;
+    color: #333;
 }
 
-.loading {
-    font-size: 1.2rem;
-    color: #007bff;
+.like-section {
+    text-align: center;
+    margin: 1rem 0;
 }
 
-.error {
+.like-button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.mdi-heart {
+    font-size: 2rem;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.mdi-heart.liked {
     color: red;
+    transform: scale(1.2);
+}
+
+.mdi-heart:not(.liked) {
+    color: gray;
+}
+
+/* Comments Section */
+.right-column {
+    margin-top: 20px;
+}
+
+@media (min-width: 768px) {
+    .content-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        background-color: white;
+    }
+
+    .right-column {
+        margin-top: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .content-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        border-radius: 8px;
+    }
+
+    .right-column {
+        margin-top: 20px;
+    }
 }
 </style>

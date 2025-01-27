@@ -43,9 +43,11 @@ const submitArticle = async () => {
     padding: 1rem;
     max-width: 600px;
     margin: 0 auto;
-    background-color: #f9f9f9;
+    background-color: white;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-top: 50px;
 }
 
 h1 {
@@ -59,6 +61,7 @@ h1 {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+
 }
 
 .form-group {
