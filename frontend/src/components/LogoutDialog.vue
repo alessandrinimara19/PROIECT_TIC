@@ -12,6 +12,9 @@
 </template>
 
 <script>
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
+
 export default {
     name: "LogoutDialog",
     props: {
@@ -20,17 +23,30 @@ export default {
             default: false
         }
     },
-    methods: {
-        closeModal() {
-            this.$emit("close");
-        },
-        confirmLogout() {
-            this.$emit("confirm");
-            this.closeModal(); // Inchidire dialog la confirmare
-        }
+    setup(_, { emit }) {
+        const store = useStore();
+        const router = useRouter();
+
+        const closeModal = () => {
+            emit("close");
+        };
+
+        const confirmLogout = () => {
+            emit("confirm");
+            store.dispatch('logout');  // Actiune logout din Vuex store
+            localStorage.removeItem("token");  // Stergere token din localStorage
+            router.push('/login');  // Redirect la pagina de login
+            closeModal(); // Inchidire dialog la confirmare
+        };
+
+        return {
+            closeModal,
+            confirmLogout
+        };
     }
 };
 </script>
+
 
 <style scoped>
 .modal-overlay {

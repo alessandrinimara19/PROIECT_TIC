@@ -30,6 +30,13 @@
                 <span v-if="errors.password" class="error-message">{{ errors.password }}</span>
             </div>
 
+            <div class="form-group">
+                <label for="confirmedPassword">Confirmă Parolă</label>
+                <input type="password" id="confirmedPassword" v-model="form.confirmedPassword"
+                    :class="{ 'is-invalid': errors.confirmedPassword }" placeholder="Parola" />
+                <span v-if="errors.confirmedPassword" class="error-message">{{ errors.confirmedPassword }}</span>
+            </div>
+
             <button type="submit" class="submit-button" :disabled="!isFormValid">Înregistrează-te</button>
         </form>
 
@@ -43,22 +50,30 @@
 <script>
 import { ref, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { toast } from "vue3-toastify"
+const API_URL = import.meta.env.VITE_API_URL;
+// import userStore from  "../state/userStore.js";
+import { useStore } from 'vuex';
 
 export default {
     name: 'RegisterForm',
     setup() {
+        const store = useStore()
+
         const form = ref({
             firstName: '',
             lastName: '',
             email: '',
-            password: ''
+            password: '',
+            confirmedPassword: ''
         });
 
         const errors = ref({
             firstName: '',
             lastName: '',
             email: '',
-            password: ''
+            password: '',
+            confirmedPassword: ''
         });
 
         const router = useRouter();
@@ -70,6 +85,8 @@ export default {
             errors.value.email = form.value.email && /\S+@\S+\.\S+/.test(form.value.email) ? '' : 'Email invalid';
             errors.value.password =
                 form.value.password && form.value.password.length >= 6 ? '' : 'Parola trebuie să aibă cel puțin 6 caractere';
+            errors.value.confirmedPassword =
+                form.value.confirmedPassword && form.value.password === form.value.confirmedPassword ? '' : "Parolele trebuie sa coincidă"
         };
 
         // Verificare daca formularul este valid
@@ -82,13 +99,39 @@ export default {
         watch(() => form.value.lastName, validateForm);
         watch(() => form.value.email, validateForm);
         watch(() => form.value.password, validateForm);
+        watch(() => form.value.confirmedPassword, validateForm);
 
-        const handleSubmit = () => {
+        const handleSubmit = async () => {
             validateForm();
             if (isFormValid.value) {
-                // Dacă formularul este valid, navighează către discover
-                console.log('Formular trimis:', form.value);
-                router.push('/');
+                try {
+                    const response = await fetch(`${API_URL}/auth/register`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            name: firstName.value,
+                            surname: lastName.value,
+                            email: email.value,
+                            password: password.value,
+                            confirmedPassword: confirmedPassword.value,
+                        }),
+                        credentials: "include",
+                    });
+                    const data = await response.json();
+                    if (data.status === "fail") {
+                        toast.error(data.message);
+                    } else if (data.status === "success") {
+                        localStorage.setItem("token", data.token);
+                        // const { token } = useStore();
+                        // token.value = data.token;
+                        store.commit('SET_TOKEN', data.token);
+                        router.push("/");
+                    }
+                } catch (err) {
+                    toast.error(err.message);
+                }
             }
         };
 

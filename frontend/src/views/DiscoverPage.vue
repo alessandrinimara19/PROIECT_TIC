@@ -92,7 +92,7 @@ onMounted(fetchData);
 <template>
     <TopNav></TopNav>
     <div class="discover-page">
-        <h1>Discover Articles</h1>
+        <h1>Descoperă Articole</h1>
 
         <!-- Loading -->
         <div v-if="loading" class="loading">Loading articles...</div>

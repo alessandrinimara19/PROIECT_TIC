@@ -10,6 +10,8 @@ import {
   dislikeArticle
 } from "../controllers/articleController.js";
 
+import { protectRoutes } from "../controllers/authController.js";
+
 const router = express.Router();
 
 // Rute
@@ -21,5 +23,7 @@ router.delete("/:id", deleteArticle);
 router.post("/:id/comments", addCommentToArticle);
 router.post("/:id/like", likeArticle);
 router.post("/:id/dislike", dislikeArticle)
+
+router.use(protectRoutes);
 
 export { router as articleRouter };

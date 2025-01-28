@@ -3,18 +3,26 @@ import App from './App.vue'
 import { VueFire } from 'vuefire';
 
 import router from "./router"
-import store from "./state/store"
+import userStore from "./state/userStore.js"
 
 import { firebaseApp } from "./firebaseConfig"
+
+import Vue3Toastify from 'vue3-toastify';
 
 const app = createApp(App);
 
 app.use(router); // Utilizează router-ul
-app.use(store) // Utilizează "store" pentru gestionarea stării (Vuex)
+app.use(userStore) // Utilizează "userStore" pentru gestionarea stării (Vuex)
 
 app.use(VueFire, {
     firebaseApp
 })
+
+app.use(Vue3Toastify, {
+    autoclose: 3000,
+    position: "bottom-right",
+    theme: "colored",
+});
 
 app.mount('#app');
 

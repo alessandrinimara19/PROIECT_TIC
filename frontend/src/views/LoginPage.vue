@@ -29,10 +29,15 @@
 <script>
 import { ref, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
+import { toast } from "vue3-toastify"
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default {
     name: 'LoginForm',
     setup() {
+        const store = useStore();
+        
         const form = ref({
             email: '',
             password: ''
@@ -61,13 +66,32 @@ export default {
         watch(() => form.value.email, validateForm);
         watch(() => form.value.password, validateForm);
 
-        const handleSubmit = () => {
+        const handleSubmit = async () => {
             validateForm();
             if (isFormValid.value) {
-                // Dacă formularul este valid, navighează către discover
-                //TODO login
-                console.log('Datele de login:', form.value);
-                router.push('/'); // Navigare catre discover
+                try {
+                    const response = await fetch(`${API_URL}/auth/login`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            email: email.value,
+                            password: password.value,
+                        }),
+                        credentials: "include",
+                    });
+                    const data = await response.json();
+                    if (data.status === "fail") {
+                        toast.error(data.message);
+                    } else if (data.status === "success") {
+                        localStorage.setItem("token", data.token);
+                        store.commit('SET_TOKEN', data.token);
+                        router.push("/"); // Navigare catre discover
+                    }
+                } catch (err) {
+                    toast.error(err.message);
+                }
             }
         };
 
