@@ -69,7 +69,6 @@ const navigateToArticle = () => {
 
 .content {
     flex: 1;
-    /* Ocupă spațiul rămas */
     font-size: 0.875rem;
     color: #555;
     margin-bottom: 0.5rem;
