@@ -1,6 +1,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { truncateContent } from '../../utils/formatters';
+import { defineEmits } from 'vue';
 
 const props = defineProps({
     id: String,
@@ -20,11 +21,17 @@ const props = defineProps({
 
 //instantiere router pentru navigare 
 const router = useRouter()
+const emit = defineEmits(["delete"]); //emitere eveniment de stergere
 
 // Funcție pentru a naviga la pagina articolului
 const navigateToArticle = () => {
     router.push(`/article/${props.id}`);
 };
+
+const displayDeleteArticleConfirmationDialog = () => {
+    emit("delete", props.id); // emitere eveniment stergere, furnizare id articolul
+}
+
 </script>
 
 <template>
@@ -38,11 +45,10 @@ const navigateToArticle = () => {
             <button class="edit-button">
                 <i class="mdi mdi-pencil icon"></i> Edit
             </button>
-            <button class="delete-button">
+            <button class="delete-button" @click.stop="displayDeleteArticleConfirmationDialog">
                 <i class="mdi mdi-trash-can icon"></i> Delete
             </button>
         </div>
-
     </div>
 </template>
 
