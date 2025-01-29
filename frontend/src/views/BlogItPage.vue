@@ -22,19 +22,56 @@
 
 <script setup>
 
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import TopNav from "../components/TopNav.vue";
+import { useStore } from "vuex";
+import { toast } from "vue3-toastify";
+
+const API_URL = import.meta.env.VITE_API_URL;
+const store = useStore();
+
+const userId = computed(() => store.getters.userId);  // Obținere userId din store
 
 const form = ref({
     title: "",
     content: "",
 });
 
-// Funcție pentru trimiterea articolului - TODO
+// Funcție pentru trimiterea articolului
 const submitArticle = async () => {
-    console.log("Articol adăugat:", form.value);
-    // Resetarea formularului
-    form.value = { title: "", content: "" };
+    console.log("userId in BlogIt: " + userId.value)
+    console.log("isLogged in: " + store.getters.isLogged)
+    if (!userId) {
+        toast.error("Trebuie să fii autentificat pentru a publica un articol.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/articles/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${store.state.token}`, // Trimitere token pentru autentificare
+            },
+            body: JSON.stringify({
+                title: form.value.title,
+                content: form.value.content,
+                authorId: userId.value,
+            }),
+        });
+
+        const data = await response.json();
+
+        if (data.status === "success") {
+            toast.success("Articol publicat cu succes!");
+            // Resetare formular
+            form.value = { title: "", content: "" };
+        } else {
+            toast.error(data.message || "Eroare la publicarea articolului.");
+        }
+    } catch (error) {
+        toast.error("Eroare de rețea. Încearcă din nou.: " + error);
+    }
 };
 </script>
 

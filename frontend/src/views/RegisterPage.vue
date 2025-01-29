@@ -50,10 +50,9 @@
 <script>
 import { ref, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 import { toast } from "vue3-toastify"
 const API_URL = import.meta.env.VITE_API_URL;
-// import userStore from  "../state/userStore.js";
-import { useStore } from 'vuex';
 
 export default {
     name: 'RegisterForm',
@@ -124,8 +123,6 @@ export default {
                         toast.error(data.message);
                     } else if (data.status === "success") {
                         localStorage.setItem("token", data.token);
-                        // const { token } = useStore();
-                        // token.value = data.token;
                         store.commit('SET_TOKEN', data.token);
                         router.push("/");
                     }

@@ -49,15 +49,15 @@ const getArticleById = async (req, res, next) => {
 // Creează un articol
 const createArticle = async (req, res, next) => {
   try {
-    const { title, content, author } = req.body;
+    const { title, content, authorId } = req.body;
 
     const newArticle = {
+      authorId,
       title,
       content,
-      author,
       createdAt: new Date().toISOString(),
       comments: [],
-      likes: 0,
+      likes: [],
     };
 
     const articleRef = await db.collection("Articles").add(newArticle);
