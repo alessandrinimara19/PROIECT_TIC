@@ -86,9 +86,9 @@ export default {
                         toast.error(data.message);
                     } else if (data.status === "success") {
                         localStorage.setItem("token", data.token);
-                        store.commit('SET_TOKEN', data.token);                        
+                        store.commit('SET_TOKEN', data.token);
                         //fetchUserData pentru a prelua datele user-ului
-                        await store.dispatch('fetchUserData');                        
+                        await store.dispatch('fetchUserData');
                         router.push("/"); // Navigare catre discover
                     }
                 } catch (err) {

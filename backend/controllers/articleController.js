@@ -1,5 +1,8 @@
 import db from "../database/firestore.js";
 import AppError from "../utils/AppError.js";
+import admin from "firebase-admin"
+
+const Timestamp = admin.firestore.Timestamp;
 
 // Obține toate articolele
 const getAllArticles = async (req, res, next) => {
@@ -55,7 +58,7 @@ const createArticle = async (req, res, next) => {
       authorId,
       title,
       content,
-      createdAt: new Date().toISOString(),
+      createdAt: Timestamp.now(),
       comments: [],
       likes: [],
     };
@@ -135,7 +138,7 @@ const addCommentToArticle = async (req, res, next) => {
       commentId: `comm_${Date.now()}`,
       userId,
       content,
-      createdAt: new Date().toISOString(),
+      createdAt: Timestamp.now(),
     };
 
     const updatedComments = [...doc.data().comments, newComment];

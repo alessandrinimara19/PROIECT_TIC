@@ -4,6 +4,7 @@ import BlogItPage from "../views/BlogItPage.vue";
 import ArticlePage from "../views/ArticlePage.vue";
 import RegisterPage from "../views/RegisterPage.vue";
 import LoginPage from "../views/LoginPage.vue";
+import UserProfile from "../views/UserProfile.vue"
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -27,6 +28,11 @@ const router = createRouter({
             path: "/blogit",
             name: "blogit",
             component: BlogItPage, // Adaugă ruta pentru BlogItPage
+        },
+        {
+            path: "/profil",
+            name: "profil",
+            component: UserProfile, // Adaugă ruta pentru UserProfile
         },
         {
             path: '/article/:id',

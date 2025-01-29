@@ -1,15 +1,16 @@
 import { createStore } from "vuex";
 import { toast } from "vue3-toastify";
 import jwt_decode from 'jwt-decode';
-import router from '../router/index.js';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const store = createStore({
   state: {
     token: localStorage.getItem("token") || null, //stocare token-ul JWT
-    userData: null, //datele user-ului
     userId: null,
+    firstName: null,
+    lastName: null,
+    profilePicture: "https://plchldr.co/i/200x200?&bg=f2f2f2&fc=111111&text=BLOG%20IT"
   },
   getters: { //verificare daca user-ul este logat si decodare userId din token JWT
     isLogged: (state) => !!state.token,
@@ -22,7 +23,9 @@ const store = createStore({
         return null;
       }
     },
-    userData: (state) => state.userData,
+    userFirstName: (state) => state.firstName,
+    userLastName: (state) => state.lastName,
+    userProfilePicture: (state) => state.profilePicture,
   },
   mutations: {
     SET_TOKEN(state, token) {//actualizare token si stocare in localStorage
@@ -37,8 +40,16 @@ const store = createStore({
         state.userId = null;
       }
     },
-    SET_USER_DATA(state, userData) {//actualizare date utilizator
-      state.userData = userData;
+    SET_USER_DATA(state, userData) { // Actualizare dateutilizator 
+      if (userData.name && userData.surname && userData.profilePicture) {
+        state.firstName = userData.name;
+        state.lastName = userData.surname;
+        state.profilePicture = userData.profilePicture
+      } else {
+        state.firstName = null;
+        state.lastName = null;
+        state.profilePicture = "https://plchldr.co/i/200x200?&bg=f2f2f2&fc=111111&text=BLOG%20IT"
+      }
     },
   },
   actions: {
@@ -58,8 +69,9 @@ const store = createStore({
         });
         const data = await response.json();
         if (data.status === "success") {
-          commit("SET_USER_DATA", data.userData);
+          commit("SET_USER_DATA", { name: data.profile.name, surname: data.profile.surname, profilePicture: data.profile.profilePicture });
         } else {
+          console.log("SET_USER_DATA null")
           commit("SET_USER_DATA", null);
         }
       } catch (err) {
