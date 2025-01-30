@@ -12,8 +12,6 @@
 </template>
 
 <script>
-import { useStore } from 'vuex';
-import { useRouter } from 'vue-router';
 
 export default {
     name: "ConfirmationDialog",
@@ -24,9 +22,6 @@ export default {
         }
     },
     setup(_, { emit }) {
-        const store = useStore();
-        const router = useRouter();
-
         const closeModal = () => {
             emit("close"); //emitere inchidere dialog
         };

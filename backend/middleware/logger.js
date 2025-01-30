@@ -13,9 +13,6 @@ if (!fs.existsSync(path.dirname(logFilePath))) {
 const logger = (req, res, next) => {
   const logMessage = `[${new Date().toISOString()}] ${req.method} ${req.originalUrl}\n`;
 
-  // Logare in consola
-  console.log(logMessage);
-
   // Logare in  fisier
   fs.appendFile(logFilePath, logMessage, (err) => {
     if (err) {

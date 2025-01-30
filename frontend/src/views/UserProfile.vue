@@ -5,6 +5,7 @@ import TopNav from "../components/TopNav.vue";
 import ArticleCard from "../components/ArticleCard.vue";
 import { convertTimestamp } from "../../utils/formatters.js"
 import ConfirmationDialog from "../components/ConfirmationDialog.vue";
+import { toast } from "vue3-toastify"
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -67,12 +68,14 @@ const deleteArticle = async () => {
     const response = await fetch(`${API_URL}/articles/${selectedArticleId.value}`, {
       method: "DELETE",
     });
-    if (!response.ok) throw new Error("Failed to delete article");
+    if (!response.ok) throw new Error("Failed to delete article")
+    else toast.success("Articolul a fost șters cu succes!")
 
     articles.value = articles.value.filter(article => article.id !== selectedArticleId.value);
     showDeleteDialog.value = false;
   } catch (error) {
     console.error("Error deleting article:", error);
+    toast.success("A apărut o eroare la ștergerea articolului!")
   }
 };
 

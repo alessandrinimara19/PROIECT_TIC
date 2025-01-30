@@ -6,29 +6,33 @@
         <form class="blog-form" @submit.prevent="submitArticle">
             <div class="form-group">
                 <label for="title">Titlu</label>
-                <input id="title" v-model="form.title" type="text" placeholder="Scrie titlul articolului..." required />
+                <input id="title" v-model="form.title" type="text" placeholder="Scrie titlul articolului..."
+                    :class="{ 'is-invalid': errors.title }" />
+                <span v-if="errors.title" class="error-message">{{ errors.title }}</span>
             </div>
 
             <div class="form-group">
                 <label for="content">Conținut</label>
                 <textarea id="content" v-model="form.content" placeholder="Scrie conținutul articolului..." rows="6"
-                    required></textarea>
+                    :class="{ 'is-invalid': errors.content }"></textarea>
+                <span v-if="errors.content" class="error-message">{{ errors.content }}</span>
             </div>
 
-            <button type="submit" class="submit-button">Blog It!</button>
+            <button type="submit" class="submit-button" :disabled="!isFormValid">Blog It!</button>
         </form>
     </div>
 </template>
 
 <script setup>
-
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import TopNav from "../components/TopNav.vue";
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 import { toast } from "vue3-toastify";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const store = useStore();
+const router = useRouter()
 
 const userId = computed(() => store.getters.userId);  // Obținere userId din store
 
@@ -37,11 +41,31 @@ const form = ref({
     content: "",
 });
 
-// Funcție pentru trimiterea articolului
+const errors = ref({
+    title: "",
+    content: "",
+});
+
+// Validarea formularului
+const validateForm = () => {
+    errors.value.title = form.value.title.trim() ? "" : "Titlul este obligatoriu";
+    errors.value.content = form.value.content.trim() ? "" : "Conținutul este obligatoriu";
+};
+
+// Verificare dacă formularul este valid
+const isFormValid = computed(() => {
+    return !errors.value.title && !errors.value.content;
+});
+
+// Observare schimbari si validare în timp real
+watch(() => form.value.title, validateForm);
+watch(() => form.value.content, validateForm);
+
 const submitArticle = async () => {
-    console.log("userId in BlogIt: " + userId.value)
-    console.log("isLogged in: " + store.getters.isLogged)
-    if (!userId) {
+    validateForm();
+    if (!isFormValid.value) return;
+
+    if (!userId.value) {
         toast.error("Trebuie să fii autentificat pentru a publica un articol.");
         return;
     }
@@ -66,6 +90,8 @@ const submitArticle = async () => {
             toast.success("Articol publicat cu succes!");
             // Resetare formular
             form.value = { title: "", content: "" };
+            // Navigare profil
+            router.push("/profil")
         } else {
             toast.error(data.message || "Eroare la publicarea articolului.");
         }
@@ -98,7 +124,6 @@ h1 {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-
 }
 
 .form-group {
@@ -117,6 +142,7 @@ input,
 textarea {
     padding: 0.75rem;
     font-size: 1rem;
+    font-family: Arial, sans-serif;
     border: 1px solid #ddd;
     border-radius: 4px;
     box-sizing: border-box;
@@ -124,16 +150,26 @@ textarea {
     background-color: #fff;
 }
 
-input:focus,
-textarea:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+input::placeholder,
+textarea::placeholder {
+    font-family: Arial, sans-serif;
+    font-size: 1rem;
+    color: #999;
+}
+
+input.is-invalid,
+textarea.is-invalid {
+    border-color: red;
+}
+
+.error-message {
+    font-size: 0.9rem;
+    color: red;
 }
 
 .submit-button {
     color: white;
-    border: bold;
+    border: none;
     padding: 0.75rem 1.5rem;
     font-size: 1rem;
     font-weight: bold;
@@ -143,7 +179,12 @@ textarea:focus {
     transition: background-color 0.3s ease;
 }
 
-.submit-button:hover {
+.submit-button:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+}
+
+.submit-button:hover:not(:disabled) {
     background-color: #540b9e;
 }
 </style>

@@ -8,6 +8,7 @@ import userStore from "./state/userStore.js"
 import { firebaseApp } from "./firebaseConfig"
 
 import Vue3Toastify from 'vue3-toastify';
+import "vue3-toastify/dist/index.css";
 
 const app = createApp(App);
 
@@ -19,9 +20,13 @@ app.use(VueFire, {
 })
 
 app.use(Vue3Toastify, {
-    autoclose: 3000,
+    autoClose: 3000, // Auto close dupa 3 secunde
     position: "bottom-right",
     theme: "colored",
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    newestOnTop: true,
 });
 
 app.mount('#app');
