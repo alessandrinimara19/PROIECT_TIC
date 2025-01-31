@@ -1,6 +1,7 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
+import { useStore } from "vuex";
 import { convertTimestamp } from '../../utils/formatters.js';
 import CommentsSection from '../components/CommentsSection.vue';
 import LikesSection from '../components/LikesSection.vue';
@@ -13,6 +14,10 @@ const article = ref({});
 const loading = ref(true);
 const error = ref('');
 const usersMap = ref({});
+
+const store = useStore()
+const userId = computed(() => store.getters.userId)
+const userLikedArticle = ref(false)
 
 // Fetch articol si useri (pentru afisarea autorului articolului si a autorilor comentariilor)
 const fetchArticle = async () => {
@@ -30,6 +35,8 @@ const fetchArticle = async () => {
 
         const data = await response.json();
         article.value = data.article;
+
+        userLikedArticle.value = article.value.likes.some((like) => like.userId === userId.value);
 
         // Fetch useri si populare usersMap
         await fetchAllUsers();
@@ -98,7 +105,7 @@ onMounted(fetchArticle);
             </div>
 
             <!-- Sectiune like-uri -->
-            <LikesSection :likes="article.likes.length" />
+            <LikesSection :articleId=articleId :likes="article.likes.length" :isLiked="userLikedArticle" />
 
             <!-- Sectiune comentarii -->
             <div class="right-column">

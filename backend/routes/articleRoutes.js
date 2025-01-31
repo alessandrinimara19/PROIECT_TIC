@@ -23,7 +23,7 @@ router.patch("/:id", updateArticle);
 router.delete("/:id", deleteArticle);
 router.post("/:id/comments", addCommentToArticle);
 router.delete("/:id/comments/:commentId", deleteCommentFromArticle);
-router.post("/:id/like", likeArticle);
+router.post("/:id/like/:userId", likeArticle);
 router.delete("/:id/dislike/:userId", dislikeArticle)
 
 router.use(protectRoutes);

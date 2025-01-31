@@ -8,21 +8,74 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { useStore } from "vuex";
+import { toast } from "vue3-toastify";
+
+const API_URL = import.meta.env.VITE_API_URL;
+
+const store = useStore()
+const userId = computed(() => store.getters.userId)
 
 const props = defineProps({
+    articleId: String,
     likes: {
         type: Number,
         default: 0
+    },
+    isLiked: {
+        type: Boolean,
+        default: false
     }
 });
 
 const likes = ref(props.likes);
-const isLiked = ref(false);
+const isLiked = ref(props.isLiked);
+const articleId = ref(props.articleId)
 
-const toggleLike = () => {
-    isLiked.value = !isLiked.value;
-    likes.value += isLiked.value ? 1 : -1;
+const toggleLike = async () => {
+    let method = ""
+    let route = ""
+    if (isLiked.value) {
+        method = "DELETE"
+        route = `${API_URL}/articles/${props.articleId}/dislike/${userId.value}`
+    } else {
+        method = "POST"
+        route = `${API_URL}/articles/${props.articleId}/like/${userId.value}`
+    }
+
+    if (!userId.value) {
+        toast.error("Pentru a continua trebuie sa te autentifici!");
+        return;
+    }
+
+    try {
+        const response = await fetch(route, {
+            method: method,
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${store.state.token}`, // Trimitere token pentru autentificare
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.status === "success") {
+            if (isLiked.value) {
+                toast.success("Articol dezapreciat cu succes!");
+            } else {
+                toast.success("Articol apreciat cu succes!");
+            }
+
+            isLiked.value = !isLiked.value;
+            likes.value += isLiked.value ? 1 : -1;
+        } else {
+            toast.error("A aparut o eroare.");
+        }
+    } catch (error) {
+        console.log(error);
+        toast.error("Eroare de rețea. Încearcă din nou.");
+    }
 };
 </script>
 

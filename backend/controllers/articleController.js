@@ -196,8 +196,7 @@ const deleteCommentFromArticle = async (req, res, next) => {
 // // Adaugă un like la un articol
 const likeArticle = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    let { userId } = req.body;
+    const { id, userId } = req.params;
 
     if (!userId || typeof userId !== "string") {
       return res.status(400).json({
@@ -259,7 +258,7 @@ const dislikeArticle = async (req, res, next) => {
     //gaseste index ul like-ului de sters
     const likeIndex = likes.findIndex((like) => like.userId === userId);
 
-    if(likeIndex === -1) {
+    if (likeIndex === -1) {
       throw new AppError("UserId invalid/nu s-a gasit", 404);
     }
 
