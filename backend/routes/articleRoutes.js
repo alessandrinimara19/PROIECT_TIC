@@ -24,7 +24,7 @@ router.delete("/:id", deleteArticle);
 router.post("/:id/comments", addCommentToArticle);
 router.delete("/:id/comments/:commentId", deleteCommentFromArticle);
 router.post("/:id/like", likeArticle);
-router.post("/:id/dislike", dislikeArticle)
+router.delete("/:id/dislike/:userId", dislikeArticle)
 
 router.use(protectRoutes);
 

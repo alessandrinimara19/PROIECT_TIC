@@ -193,10 +193,18 @@ const deleteCommentFromArticle = async (req, res, next) => {
   }
 };
 
-// Adaugă un like la un articol
+// // Adaugă un like la un articol
 const likeArticle = async (req, res, next) => {
   try {
     const { id } = req.params;
+    let { userId } = req.body;
+
+    if (!userId || typeof userId !== "string") {
+      return res.status(400).json({
+        status: "fail",
+        message: "userId invalid",
+      });
+    }
 
     const articleRef = db.collection("Articles").doc(id);
     const doc = await articleRef.get();
@@ -205,22 +213,38 @@ const likeArticle = async (req, res, next) => {
       throw new AppError("Articolul nu a fost găsit", 404);
     }
 
-    const currentLikes = doc.data().likes || 0;
-    await articleRef.update({ likes: currentLikes + 1 });
+    let likes = doc.data().likes;
+
+    // Verificare daca user-ul a apreciat deja articolul 
+    const alreadyLiked = likes.some((like) => like.userId === userId);
+
+    if (alreadyLiked) {
+      return res.status(400).json({
+        status: "fail",
+        message: "User-ul a apreciat deja articolul",
+      });
+    }
+
+    const newLike = { userId };
+    const updatedLikes = [...doc.data().likes, newLike];
+
+    await articleRef.update({ likes: updatedLikes });
 
     res.status(200).json({
       status: "success",
-      likes: currentLikes + 1,
+      message: "Articol apreciat cu succes",
+      likes: [...likes, { userId }],
     });
   } catch (err) {
     next(err);
   }
 };
 
-// Sterge un like la un articol
+
+// Dislike articol
 const dislikeArticle = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const { id, userId } = req.params;
 
     const articleRef = db.collection("Articles").doc(id);
     const doc = await articleRef.get();
@@ -229,14 +253,23 @@ const dislikeArticle = async (req, res, next) => {
       throw new AppError("Articolul nu a fost găsit", 404);
     }
 
-    const currentLikes = doc.data().likes || 0;
-    if (currentLikes > 0) {
-      await articleRef.update({ likes: currentLikes - 1 });
+    //preluare like-uri
+    const likes = doc.data().likes;
+
+    //gaseste index ul like-ului de sters
+    const likeIndex = likes.findIndex((like) => like.userId === userId);
+
+    if(likeIndex === -1) {
+      throw new AppError("UserId invalid/nu s-a gasit", 404);
     }
+
+    likes.splice(likeIndex, 1);
+
+    await articleRef.update({ likes });
 
     res.status(200).json({
       status: "success",
-      likes: currentLikes - 1,
+      likes: "Like-ul a fost sters cu succes",
     });
   } catch (err) {
     next(err);
