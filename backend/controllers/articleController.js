@@ -1,6 +1,7 @@
 import db from "../database/firestore.js";
 import AppError from "../utils/AppError.js";
 import admin from "firebase-admin"
+import { faker } from "@faker-js/faker"
 
 const Timestamp = admin.firestore.Timestamp;
 
@@ -135,7 +136,7 @@ const addCommentToArticle = async (req, res, next) => {
     }
 
     const newComment = {
-      commentId: `comm_${Date.now()}`,
+      commentId: faker.string.uuid(),
       userId,
       content,
       createdAt: Timestamp.now(),
@@ -148,6 +149,44 @@ const addCommentToArticle = async (req, res, next) => {
     res.status(201).json({
       status: "success",
       comment: newComment,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+//sterge comentariu articol
+const deleteCommentFromArticle = async (req, res, next) => {
+  try {
+    const { id, commentId } = req.params;
+
+    // referinta - documentul articolului
+    const articleRef = db.collection("Articles").doc(id);
+    const doc = await articleRef.get();
+
+    if (!doc.exists) {
+      throw new AppError("Articolul nu a fost găsit", 404);
+    }
+
+    //Preluare comentarii
+    const comments = doc.data().comments;
+
+    //Gaseste indexul comentariului de sters
+    const commentIndex = comments.findIndex((comment) => comment.commentId === commentId);
+
+    if (commentIndex === -1) {
+      throw new AppError("Comentariul nu a fost găsit", 404);
+    }
+
+    //Stergere comment din vector de comentarii
+    comments.splice(commentIndex, 1);
+
+    //update articol cu noul array de comments
+    await articleRef.update({ comments });
+
+    res.status(200).json({
+      status: "success",
+      message: "Comentariul a fost șters cu succes",
     });
   } catch (err) {
     next(err);
@@ -211,6 +250,7 @@ export {
   updateArticle,
   deleteArticle,
   addCommentToArticle,
+  deleteCommentFromArticle,
   likeArticle,
   dislikeArticle
 }

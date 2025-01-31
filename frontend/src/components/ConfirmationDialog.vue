@@ -72,7 +72,7 @@ export default {
     background-color: #6a0dad;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 20px;
     cursor: pointer;
 }
 

@@ -102,7 +102,7 @@ onMounted(fetchArticle);
 
             <!-- Sectiune comentarii -->
             <div class="right-column">
-                <CommentsSection :comments="article.comments" />
+                <CommentsSection :comments="article.comments" :articleId=articleId />
             </div>
         </div>
     </div>

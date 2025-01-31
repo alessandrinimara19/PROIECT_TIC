@@ -129,7 +129,8 @@ const protectRoutes = async (req, res, next) => {
             err.statusCode = 401;
         }
         if ("jwt expired" === err.message) {
-            err.message += ". Please login again.";
+            console.log(err.message += ". Please login again.")
+            err.message = "Sesiunea a expirat, pentru a continua trebuie să te autentifici.";
         }
         next(err);
     }

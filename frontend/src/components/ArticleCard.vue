@@ -101,6 +101,7 @@ const displayDeleteArticleConfirmationDialog = () => {
     font-size: 0.875rem;
     display: flex;
     align-items: center;
+    border-radius: 20px;
     gap: 5px;
 }
 
