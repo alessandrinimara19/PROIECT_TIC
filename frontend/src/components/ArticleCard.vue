@@ -21,7 +21,7 @@ const props = defineProps({
 
 //instantiere router pentru navigare 
 const router = useRouter()
-const emit = defineEmits(["delete"]); //emitere eveniment de stergere
+const emit = defineEmits(["delete", "openEditModal"]); //emite evenimente de stergere articol si deschidere modala de editare
 
 // Funcție pentru a naviga la pagina articolului
 const navigateToArticle = () => {
@@ -32,6 +32,14 @@ const displayDeleteArticleConfirmationDialog = () => {
     emit("delete", props.id); // emitere eveniment stergere, furnizare id articolul
 }
 
+// click-ul pe butonul de edit emite event-ul ce deschida modala
+const openEditModal = () => {
+    emit("openEditModal", {
+        id: props.id,
+        title: props.title,
+        content: props.content,
+    });
+};
 </script>
 
 <template>
@@ -42,7 +50,7 @@ const displayDeleteArticleConfirmationDialog = () => {
 
         <!-- Iconițe Edit și Delete, afisate doar dacă canEditDelete este true -->
         <div v-if="canEditDelete" class="actions">
-            <button class="edit-button">
+            <button class="edit-button" @click.stop="openEditModal">
                 <i class="mdi mdi-pencil icon"></i> Edit
             </button>
             <button class="delete-button" @click.stop="displayDeleteArticleConfirmationDialog">

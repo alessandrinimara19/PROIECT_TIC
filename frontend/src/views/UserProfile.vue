@@ -5,6 +5,7 @@ import TopNav from "../components/TopNav.vue";
 import ArticleCard from "../components/ArticleCard.vue";
 import { convertTimestamp } from "../../utils/formatters.js"
 import ConfirmationDialog from "../components/ConfirmationDialog.vue";
+import EditArticleModal from "../components/EditArticleModal.vue"
 import { toast } from "vue3-toastify"
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -23,6 +24,8 @@ const error = ref({});
 // Dialog confirmare stergere articol state
 const showDeleteDialog = ref(false);
 const selectedArticleId = ref(null);
+const showEditArticleModal = ref(false);
+const selectedArticle = ref({});
 
 const fetchUserArticles = async () => { //fetch toate articolele user-ului
   try {
@@ -43,7 +46,7 @@ const fetchUserArticles = async () => { //fetch toate articolele user-ului
     articles.value = data.articles.map((article) => {
       return {
         ...article,
-        author: "Me!",
+        author: "mine",
         createdAt: convertTimestamp(article.createdAt)
       };
     });
@@ -79,6 +82,21 @@ const deleteArticle = async () => {
   }
 };
 
+// Deschidere modala editare articol
+const openEditArticleModal = (article) => {
+  selectedArticle.value = { ...article }; // Setează direct articolul primit
+  showEditArticleModal.value = true;
+};
+
+//update articol si inchidere modala
+const updateArticle = (updatedArticle) => {
+  const index = articles.value.findIndex(article => article.id === updatedArticle.id);
+  if (index !== -1) {
+    articles.value[index] = { ...articles.value[index], ...updatedArticle };
+  }
+  showEditArticleModal.value = false;
+};
+
 onMounted(fetchUserArticles)
 
 </script>
@@ -95,12 +113,18 @@ onMounted(fetchUserArticles)
     <!-- Articolele utilizatorului -->
     <div class="article-cards">
       <ArticleCard v-for="article in articles" :key="article.id" :id="article.id" :title="article.title"
-        :content="article.content" :author="article.author" :createdAt="article.createdAt" :canEditDelete=true
-        @delete="confirmDelete" />
+        :content="article.content" :author="article.author" :createdAt="article.createdAt" :canEditDelete="true"
+        @openEditModal="openEditArticleModal" @delete="confirmDelete" />
     </div>
 
     <!--Dialog confirmare stergere articol-->
     <ConfirmationDialog :show="showDeleteDialog" @close="showDeleteDialog = false" @confirm="deleteArticle" />
+
+    <!--Modala editare articol-->
+    <EditArticleModal v-if="showEditArticleModal" :title="selectedArticle.title" :content="selectedArticle.content"
+      :id="selectedArticle.id" :showModal="showEditArticleModal" @close="showEditArticleModal = false"
+      @update="updateArticle" />
+
   </div>
 </template>
 

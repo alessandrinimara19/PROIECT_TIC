@@ -26,7 +26,7 @@ app.use(
     cors({
         origin: process.env.FRONTEND_ROUTE, //permite accesul dintr-o anumita origine (frontend-ul)
         credentials: true, //permite trimiterea de cookie-uri sau alte credentiale (Authorization header)
-        methods: ["GET", "POST", "PUT", "DELETE"]
+        methods: ["GET", "POST", "PUT", "DELETE", "PATCH"]
     })
 )
 
